@@ -280,9 +280,11 @@
 <!-- Add jQuery here -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-  // Toggle Password Visibility
-  document.getElementById('togglePassword').addEventListener('click', function() {
+  document.getElementById('togglePassword').addEventListener('click', function () {
     const password = document.getElementById('password');
     const icon = this.querySelector('i');
     if (password.type === 'password') {
@@ -299,34 +301,55 @@
   $('#loginBtn').on('click', function (e) {
     e.preventDefault();
 
-    const username = $('#username').val();
-    const password = $('#password').val();
+    const username = $('#username').val().trim();
+    const password = $('#password').val().trim();
+
+    if (!username || !password) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Fields',
+        text: 'Please enter both username and password.',
+        confirmButtonColor: '#4361ee'
+      });
+      return;
+    }
 
     $.ajax({
       url: 'http://localhost:8080/auth/login',
       method: 'POST',
       contentType: 'application/json',
-      data: JSON.stringify({
-        username: username,
-        password: password
-      }),
+      data: JSON.stringify({ username, password }),
       success: function (response) {
-        alert('Login successful!');
-        setCookie('token', response.data.accessToken, 1);
-        window.location.href = 'dashboard.html';
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful!',
+          text: 'Redirecting to dashboard...',
+          confirmButtonColor: '#4361ee',
+          timer: 2000,
+          showConfirmButton: false
+        }).then(() => {
+          setCookie("token", response.data.accessToken, 1);
+          setCookie("username", username, 1);
+          window.location.href = 'dashboard.html';
+        });
       },
       error: function (xhr) {
-        alert(xhr.responseJSON?.data || "Login failed!");
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: xhr.responseJSON?.data || 'Invalid credentials or server error.',
+          confirmButtonColor: '#e74c3c'
+        });
       }
     });
   });
 
-  // Set cookie
+  // Set cookie function
   function setCookie(name, value, days) {
     const d = new Date();
-    d.setTime(d.getTime() + (days*24*60*60*1000));
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
     const expires = "expires=" + d.toUTCString();
-    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    document.cookie = `${name}=${value}; ${expires}; path=/; SameSite=Strict`;
   }
 </script>
 </body>

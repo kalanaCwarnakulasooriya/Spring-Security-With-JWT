@@ -221,91 +221,98 @@
 <!-- Add jQuery here -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Include js-cookie -->
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+
 <script>
-    // Toggle Password Visibility
-    $('#togglePassword').click(function () {
-        const password = $('#password');
-        const icon = $(this).find('i');
-        if (password.attr('type') === 'password') {
-            password.attr('type', 'text');
-            icon.removeClass('bi-eye').addClass('bi-eye-slash');
-        } else {
-            password.attr('type', 'password');
-            icon.removeClass('bi-eye-slash').addClass('bi-eye');
-        }
-    });
+    const API_BASE_URL = "http://localhost:8080/auth";
 
-    $('#toggleConfirmPassword').click(function () {
-        const confirmPassword = $('#confirmPassword');
-        const icon = $(this).find('i');
-        if (confirmPassword.attr('type') === 'password') {
-            confirmPassword.attr('type', 'text');
-            icon.removeClass('bi-eye').addClass('bi-eye-slash');
-        } else {
-            confirmPassword.attr('type', 'password');
-            icon.removeClass('bi-eye-slash').addClass('bi-eye');
-        }
-    });
-
-    /*// Password Strength Checker
-    $('#password').on('input', function () {
-      const password = $(this).val();
-      const strengthBar = $('#passwordStrength');
-      let strength = 0;
-
-      if (password.length >= 6) strength += 50;
-      if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/)) strength += 30;
-      if (password.match(/[0-9]/)) strength += 20;
-
-      strengthBar.css('width', strength + '%');
-      strengthBar.css('background-color',
-              strength < 50 ? '#dc3545' : strength < 80 ? '#fd7e14' : '#28a745');
-    });*/
-
-    // Register button click handler
-    $('#registerBtn').click(function (e) {
-        e.preventDefault();
-
-        const username = $('#username').val();
-        const password = $('#password').val();
-        const confirmPassword = $('#confirmPassword').val();
-        // const role = $('#role').val();
-
-        if (password !== confirmPassword) {
-            alert('Password and Confirm Password do not match');
-            return;
-        }
-
-        if (!$('#terms').is(':checked')) {
-            alert('You must agree to the terms');
-            return;
-        }
-
-        $.ajax({
-            url: 'http://localhost:8080/auth/register',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                "password": password,
-                "username": username,
-                "role": "USER"
-            }),
-            success: function(response) {
-                alert('User registered successfully');
-                window.location.href = 'login.html';
-            },
-            error: function(error) {
-                alert('An error occurred while registering user');
-            }
+    $(document).ready(function () {
+        $('#togglePassword').click(function () {
+            const input = $('#password');
+            const icon = $(this).find('i');
+            input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
+            icon.toggleClass('bi-eye bi-eye-slash');
         });
-    });
 
-    // Form Submission
-    document.getElementById('signupForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('Account created!');
-        this.reset();
-        document.getElementById('passwordStrength').style.width = '0%';
+        $('#toggleConfirmPassword').click(function () {
+            const input = $('#confirmPassword');
+            const icon = $(this).find('i');
+            input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
+            icon.toggleClass('bi-eye bi-eye-slash');
+        });
+
+        $('#registerBtn').click(function (e) {
+            e.preventDefault();
+
+            const username = $('#username').val().trim();
+            const password = $('#password').val();
+            const confirmPassword = $('#confirmPassword').val();
+
+            if (!username || !password || !confirmPassword) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Fields',
+                    text: 'All fields are required.',
+                    confirmButtonColor: '#4361ee'
+                });
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Password Mismatch',
+                    text: 'Passwords do not match.',
+                    confirmButtonColor: '#e74c3c'
+                });
+                return;
+            }
+
+            if (!$('#terms').is(':checked')) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Terms & Conditions',
+                    text: 'You must agree to the terms.',
+                    confirmButtonColor: '#4361ee'
+                });
+                return;
+            }
+
+            $.ajax({
+                url: `${API_BASE_URL}/register`,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    username,
+                    password,
+                    role: "USER"
+                }),
+                success: function (res) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Registered Successfully!',
+                        text: 'Redirecting...',
+                        confirmButtonColor: '#4361ee',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = "login.html";
+                    });
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Registration Failed',
+                        text: 'Something went wrong. Please try again.',
+                        confirmButtonColor: '#e74c3c'
+                    });
+                }
+            });
+        });
     });
 </script>
 </body>
