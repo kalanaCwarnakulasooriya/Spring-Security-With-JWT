@@ -58,19 +58,5 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
-<script>
-    function logout() {
-        // Clear stored auth/session tokens if any
-        localStorage.removeItem('token');  // or sessionStorage.removeItem('token');
-        sessionStorage.clear();
-
-        // Optionally show a message or log out action
-        console.log("User logged out");
-
-        // Redirect to login page (change path if needed)
-        window.location.href = 'login.html';
-    }
-</script>
-
 </body>
 </html>

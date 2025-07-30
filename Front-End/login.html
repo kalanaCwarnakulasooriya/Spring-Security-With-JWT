@@ -280,7 +280,6 @@
 <!-- Add jQuery here -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Your custom script -->
 <script>
   // Toggle Password Visibility
   document.getElementById('togglePassword').addEventListener('click', function() {
@@ -313,6 +312,7 @@
       }),
       success: function (response) {
         alert('Login successful!');
+        setCookie('token', response.data.accessToken, 1);
         window.location.href = 'dashboard.html';
       },
       error: function (xhr) {
@@ -320,6 +320,14 @@
       }
     });
   });
+
+  // Set cookie
+  function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days*24*60*60*1000));
+    const expires = "expires=" + d.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+  }
 </script>
 </body>
 </html>
