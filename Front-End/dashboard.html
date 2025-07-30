@@ -58,5 +58,34 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
+<script>
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    function deleteCookie(name) {
+        document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
+
+    window.onload = function () {
+        const token = getCookie("token");
+        if (!token) {
+            window.location.href = "login.html";
+        }
+    };
+
+    function logout() {
+        deleteCookie("token");
+        deleteCookie("username");
+        console.log("User logged out");
+        window.location.href = 'login.html';
+    }
+</script>
 </body>
 </html>
