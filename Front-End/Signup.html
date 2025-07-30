@@ -221,16 +221,23 @@
 <!-- Add jQuery here -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Toastr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
-<!-- Include js-cookie -->
-<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <script>
     const API_BASE_URL = "http://localhost:8080/auth";
 
     $(document).ready(function () {
+        toastr.options = {
+            "closeButton": true,
+            // "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "timeOut": "3000"
+        };
+
         $('#togglePassword').click(function () {
             const input = $('#password');
             const icon = $(this).find('i');
@@ -253,32 +260,17 @@
             const confirmPassword = $('#confirmPassword').val();
 
             if (!username || !password || !confirmPassword) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Missing Fields',
-                    text: 'All fields are required.',
-                    confirmButtonColor: '#4361ee'
-                });
+                toastr.warning('All fields are required.', 'Missing Fields');
                 return;
             }
 
             if (password !== confirmPassword) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Password Mismatch',
-                    text: 'Passwords do not match.',
-                    confirmButtonColor: '#e74c3c'
-                });
+                toastr.error('Passwords do not match.', 'Password Mismatch');
                 return;
             }
 
             if (!$('#terms').is(':checked')) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Terms & Conditions',
-                    text: 'You must agree to the terms.',
-                    confirmButtonColor: '#4361ee'
-                });
+                toastr.info('You must agree to the terms.', 'Terms & Conditions');
                 return;
             }
 
@@ -292,24 +284,13 @@
                     role: "USER"
                 }),
                 success: function (res) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Registered Successfully!',
-                        text: 'Redirecting...',
-                        confirmButtonColor: '#4361ee',
-                        timer: 2000,
-                        showConfirmButton: false
-                    }).then(() => {
+                    toastr.success('Registered Successfully! Redirecting...', 'Success');
+                    setTimeout(() => {
                         window.location.href = "login.html";
-                    });
+                    }, 2000);
                 },
                 error: function () {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Registration Failed',
-                        text: 'Something went wrong. Please try again.',
-                        confirmButtonColor: '#e74c3c'
-                    });
+                    toastr.error('Something went wrong. Please try again.', 'Registration Failed');
                 }
             });
         });

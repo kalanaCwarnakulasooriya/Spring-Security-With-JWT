@@ -280,8 +280,11 @@
 <!-- Add jQuery here -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Toastr CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <script>
   document.getElementById('togglePassword').addEventListener('click', function () {
@@ -305,12 +308,7 @@
     const password = $('#password').val().trim();
 
     if (!username || !password) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Missing Fields',
-        text: 'Please enter both username and password.',
-        confirmButtonColor: '#4361ee'
-      });
+      toastr.warning('Please enter both username and password.', 'Missing Fields');
       return;
     }
 
@@ -320,26 +318,16 @@
       contentType: 'application/json',
       data: JSON.stringify({ username, password }),
       success: function (response) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Login Successful!',
-          text: 'Redirecting to dashboard...',
-          confirmButtonColor: '#4361ee',
-          timer: 2000,
-          showConfirmButton: false
-        }).then(() => {
-          setCookie("token", response.data.accessToken, 1);
-          setCookie("username", username, 1);
+        toastr.success('Redirecting to dashboard...', 'Login Successful!');
+        setCookie("token", response.data.accessToken, 1);
+        // setCookie("username", username, 1);
+        setTimeout(() => {
           window.location.href = 'dashboard.html';
-        });
+        }, 2000);
       },
       error: function (xhr) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Login Failed',
-          text: xhr.responseJSON?.data || 'Invalid credentials or server error.',
-          confirmButtonColor: '#e74c3c'
-        });
+        const message = xhr.responseJSON?.data || 'Invalid credentials or server error.';
+        toastr.error(message, 'Login Failed');
       }
     });
   });
@@ -351,6 +339,13 @@
     const expires = "expires=" + d.toUTCString();
     document.cookie = `${name}=${value}; ${expires}; path=/; SameSite=Strict`;
   }
+
+  toastr.options = {
+    "closeButton": true,
+    // "progressBar": true,
+    "positionClass": "toast-bottom-right",
+    "timeOut": "3000"
+  };
 </script>
 </body>
 </html>
